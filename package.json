@@ -1,0 +1,28 @@
+{
+  "name": "perkeepjs",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "module": "dist/perkeep.es.js",
+  "scripts": {
+    "start": "node index.js",
+    "build-webpack": "webpack",
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rollup": "^0.61.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.9.1",
+    "rollup-plugin-json": "^3.0.0",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8"
+  }
+}
