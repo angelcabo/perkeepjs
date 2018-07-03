@@ -2,6 +2,7 @@ import fetchPonyfill from 'fetch-ponyfill';
 const base64 = require('base-64');
 import FormData from 'form-data';
 const SHA224 = require('crypto-js/sha224');
+var stream = require('stream');
 
 const {
   fetch, Request, Response, Headers,
@@ -52,6 +53,9 @@ export default class Perkeep {
       body: "json=" + encodeURIComponent(clearText)
     };
     let response = await fetch(this.SIGN_HANDLER, options);
+    if (!response.ok) {
+      throw Error(`${response.statusText} - ${response.text()}`);
+    }
     return response.text();
   }
 
@@ -70,6 +74,104 @@ export default class Perkeep {
     let response = await fetch(this.UPLOAD_HANDLER, options);
     let blobs = await response.json();
     return blobs.received[0].blobRef;
+  }
+
+  async uploadBlob(s) {
+    let buffer = new Buffer(s);
+    let chunks = Perkeep.chunks(buffer, 1000000);
+
+    let uploadChunks = chunks.map((chunk) => this.uploadSigned(chunk));
+
+    let parts = await Promise.all(uploadChunks);
+
+    let schema = {
+      "camliVersion": 1,
+      "camliType": "file",
+      "unixMTime": new Date(Date.now()).toISOString(),
+      "fileName": "Test",
+      "parts": parts
+    };
+    console.log(schema);
+
+    // let signature = await this.signObject(schema); // instead of signing, we can try to upload using vivify to the batch upload endpoint
+    return this.uploadUnsigned(JSON.stringify(schema));
+  }
+
+  async uploadSigned(s) {
+    let blobref = Buffer.isBuffer(s) ? 'sha224-' + SHA224(s.toString('utf8')).toString() : 'sha224-' + SHA224(s).toString();
+
+    let buffer = Buffer.from(s);
+    let bufferStream = new stream.PassThrough();
+    bufferStream.end(buffer);
+
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.pass}`)}`
+      },
+      body: bufferStream
+    };
+
+    let response = await fetch(this.UPLOAD_HANDLER + '/' + blobref, options);
+    if (!response.ok) {
+      throw Error(`${response.statusText} - ${response.text()}`);
+    } else {
+      return {
+        "blobRef": blobref,
+        "size": buffer.byteLength
+      };
+    }
+  }
+
+  async uploadUnsigned(s) {
+    let blobref = Buffer.isBuffer(s) ? 'sha224-' + SHA224(s.toString('utf8')).toString() : 'sha224-' + SHA224(s).toString();
+    let buffer = Buffer.from(s);
+
+    let form = new FormData();
+    form.append(blobref, buffer);
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.pass}`)}`,
+        'X-Camlistore-Vivify': '1'
+      },
+      body: form
+    };
+
+    let response = await fetch(this.UPLOAD_HANDLER, options);
+    if (!response.ok) {
+      throw Error(`${response.statusText} - ${response.text()}`);
+    } else {
+      return {
+        "blobRef": blobref,
+        "size": buffer.byteLength
+      };
+    }
+  }
+
+  async searchFile(blobref) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.pass}`)}`
+      }
+    };
+
+    let response = await fetch(this.SEARCH_ROOT + 'camli/search/files' + '?wholedigest=' + blobref, options);
+    return response.text();
+  }
+
+  async get(blobref) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.pass}`)}`
+      }
+    };
+
+    let response = await fetch(this.host + this._discoveryConfig.blobRoot + 'camli/' + blobref, options);
+    return response.text();
   }
 
   static dateToRfc3339String(dateVal) {
@@ -101,6 +203,22 @@ export default class Perkeep {
     return formatted;
   }
 
+  static chunks(buffer, chunkSize) {
+    let bufferSize = buffer.byteLength;
+    let chunkCount = Math.ceil(bufferSize / chunkSize, chunkSize);
+    let chunks = [];
+
+    for (let i = 0; i < chunkCount; i++) {
+      if (chunkSize * (i + 1) <= bufferSize) {
+        chunks = chunks.concat(buffer.slice(chunkSize * i, chunkSize * (i + 1)));
+      } else {
+        chunks = chunks.concat(buffer.slice(chunkSize * i, bufferSize));
+      }
+    }
+
+    return chunks;
+  }
+
   async updatePermanodeAttr(blobref, claimType, attribute, value) {
     let json = {
       "camliVersion": 1,
@@ -113,7 +231,8 @@ export default class Perkeep {
     };
 
     let signature = await this.signObject(json);
-    return this.uploadSignature(signature);
+    return this.uploadSigned(signature)
+      .then(response => response['blobRef']);
   }
 
   async createPermanode(attrs) {
@@ -123,15 +242,15 @@ export default class Perkeep {
       "random": "" + Math.random()
     };
     let signature = await this.signObject(json);
-    let permanodeRef = await this.uploadSignature(signature);
+    let { blobRef } = await this.uploadSigned(signature);
     let updateAttrRequests = [];
     for(let key in attrs){
       if (attrs.hasOwnProperty(key)) {
-        updateAttrRequests.push(this.updatePermanodeAttr(permanodeRef, "set-attribute", key, attrs[key]))
+        updateAttrRequests.push(this.updatePermanodeAttr(blobRef, "set-attribute", key, attrs[key]))
       }
     }
     await Promise.all(updateAttrRequests);
-    return Object.assign(attrs, { permanodeRef });
+    return Object.assign(attrs, { permanodeRef: blobRef });
   };
 
   get discoveryConfig() {
@@ -142,6 +261,7 @@ export default class Perkeep {
     this._discoveryConfig = discoveryConfig;
     this.signHandler_ = this._discoveryConfig.signing.signHandler;
     this.uploadHandler_ = this._discoveryConfig.blobRoot + 'camli/upload';
+    this.statHandler_ = this._discoveryConfig.blobRoot + 'camli/stat';
     this.uploadHelper_ = this._discoveryConfig.uploadHelper;
     this.searchRoot_ = this._discoveryConfig.searchRoot;
     // this.searchRoot_ = this._discoveryConfig.searchRoot + 'camli/search/files';
@@ -149,6 +269,7 @@ export default class Perkeep {
 
     this.PUBLIC_KEY_BLOB_REF = this._discoveryConfig.signing.publicKeyBlobRef;
     this.UPLOAD_HANDLER = this.host + this.uploadHandler_;
+    this.STAT_HANDLER = this.host + this.statHandler_;
     this.UPLOAD_HELPER = this.host + this.uploadHelper_;
     this.SIGN_HANDLER = this.host + this.signHandler_;
     this.SEARCH_ROOT = this.host + this.searchRoot_;
