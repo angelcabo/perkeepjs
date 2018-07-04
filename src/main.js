@@ -77,27 +77,14 @@ export default class Perkeep {
   }
 
   async uploadBlob(s) {
-    let buffer = new Buffer(s);
+    let buffer = Buffer.from(s);
     let chunks = Perkeep.chunks(buffer, 1000000);
 
-    let uploadChunks = chunks.map((chunk) => this.uploadSigned(chunk));
-
-    let parts = await Promise.all(uploadChunks);
-
-    let schema = {
-      "camliVersion": 1,
-      "camliType": "file",
-      "unixMTime": new Date(Date.now()).toISOString(),
-      "fileName": "Test",
-      "parts": parts
-    };
-    console.log(schema);
-
-    // let signature = await this.signObject(schema); // instead of signing, we can try to upload using vivify to the batch upload endpoint
-    return this.uploadUnsigned(JSON.stringify(schema));
+    let uploadChunks = chunks.map((chunk) => this.uploadString(chunk));
+    return Promise.all(uploadChunks);
   }
 
-  async uploadSigned(s) {
+  async uploadString(s) {
     let blobref = Buffer.isBuffer(s) ? 'sha224-' + SHA224(s.toString('utf8')).toString() : 'sha224-' + SHA224(s).toString();
 
     let buffer = Buffer.from(s);
@@ -123,18 +110,31 @@ export default class Perkeep {
     }
   }
 
-  async uploadUnsigned(s) {
-    let blobref = Buffer.isBuffer(s) ? 'sha224-' + SHA224(s.toString('utf8')).toString() : 'sha224-' + SHA224(s).toString();
-    let buffer = Buffer.from(s);
-
+  async uploadBatched(s, vivify=false) {
+    let buffer;
+    let chunks;
     let form = new FormData();
-    form.append(blobref, buffer);
+
+    if (s !== null && (Buffer.isBuffer(s) || typeof s === 'string')) {
+      buffer = Buffer.from(s);
+      chunks = Perkeep.chunks(buffer, 1000000);
+    } else if (s !== null && typeof s === 'object') {
+      buffer = Buffer.from(JSON.stringify(s));
+      chunks = [buffer];
+    } else {
+      throw Error('Need a Buffer, object, or string');
+    }
+
+    chunks.forEach((chunk) => {
+      let chunkref = 'sha224-' + SHA224(chunk.toString('utf8')).toString();
+      form.append(chunkref, chunk);
+    });
 
     const options = {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${base64.encode(`${this.user}:${this.pass}`)}`,
-        'X-Camlistore-Vivify': '1'
+        'X-Camlistore-Vivify': vivify === true ? '1' : null
       },
       body: form
     };
@@ -143,10 +143,7 @@ export default class Perkeep {
     if (!response.ok) {
       throw Error(`${response.statusText} - ${response.text()}`);
     } else {
-      return {
-        "blobRef": blobref,
-        "size": buffer.byteLength
-      };
+      return response.json().then(r => r.received);
     }
   }
 
@@ -231,7 +228,7 @@ export default class Perkeep {
     };
 
     let signature = await this.signObject(json);
-    return this.uploadSigned(signature)
+    return this.uploadString(signature)
       .then(response => response['blobRef']);
   }
 
@@ -242,7 +239,7 @@ export default class Perkeep {
       "random": "" + Math.random()
     };
     let signature = await this.signObject(json);
-    let { blobRef } = await this.uploadSigned(signature);
+    let { blobRef } = await this.uploadString(signature);
     let updateAttrRequests = [];
     for(let key in attrs){
       if (attrs.hasOwnProperty(key)) {

@@ -30,9 +30,39 @@ perkeep.discover().then(() => {
       x += x+x;
     }
     perkeep.uploadBlob(x)
-      .then((response) => {
-        console.log(response);
-      }).then(console.log).catch(console.log);
+      .then((parts) => {
+        let schema = {
+          "camliVersion": 1,
+          "camliType": "file",
+          "unixMTime": new Date(Date.now()).toISOString(),
+          "fileName": "Test",
+          "parts": parts
+        };
+        // return schema; // if we can't sign
+        return perkeep.signObject(schema);
+      })
+      .then((signature) => {
+        return perkeep.uploadString(signature); // if we can sign
+      })
+      // .then((schema) => {
+      //   return perkeep.uploadBatched(schema, true); // if we can't sign but want the blob to be vivified (attached to a permanode)
+      // })
+      .then(console.log).catch(console.log);
+
+    // Upload all "parts" of a blob in one request. The following works best if our server or client doesn't support SPDY or HTTP/2
+    // perkeep.uploadBatched(x)
+    //   .then((parts) => {
+    //     return {
+    //       "camliVersion": 1,
+    //       "camliType": "file",
+    //       "unixMTime": new Date(Date.now()).toISOString(),
+    //       "fileName": "Uploaded through batch",
+    //       "parts": parts
+    //     };
+    //   })
+    //   .then((schema) => {
+    //     return perkeep.uploadBatched(schema, true);
+    //   }).then(console.log).catch(console.log);
   } catch (e) {
     console.log(e);
   }
