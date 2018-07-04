@@ -47,7 +47,19 @@ perkeep.discover().then(() => {
       // .then((schema) => {
       //   return perkeep.uploadBatched(schema, true); // if we can't sign but want the blob to be vivified (attached to a permanode)
       // })
-      .then(console.log).catch(console.log);
+      .then(({ blobRef }) => {
+        return perkeep.createPermanode({
+          title: 'Title',
+          url: 'https://title.com',
+          visited: '2017-11-24T00:38:41.595Z',
+          tags: 'my,tags',
+          camliContent: blobRef
+        });
+      })
+      .then(({ permanodeRef }) => {
+        console.log(permanodeRef);
+      })
+      .catch(console.log);
 
     // Upload all "parts" of a blob in one request. The following works best if our server or client doesn't support SPDY or HTTP/2
     // perkeep.uploadBatched(x)
