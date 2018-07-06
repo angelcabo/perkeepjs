@@ -1,4 +1,11 @@
 {
-  "presets": [],
-  "plugins": ["transform-es2015-modules-commonjs"]
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": {
+        "browsers": ["last 2 Chrome versions"]
+      },
+      "modules": "umd",
+      "debug": true
+    }]
+  ]
 }

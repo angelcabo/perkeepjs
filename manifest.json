@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Perkeep Browsing History",
+  "short_name": "pbh",
+  "description": "Save your browsing history",
+  "version": "1.0",
+  "version_name": "1.0 beta",
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "dist/perkeep.js",
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "<all_urls>",
+    "history",
+    "tabs",
+    "unlimitedStorage",
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "pageCapture"
+  ]
+}

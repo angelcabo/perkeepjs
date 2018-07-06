@@ -1,5 +1,63 @@
 <!doctype html>
-<script type="module">
-  import main2 from './dist/main2.js';
-  main2();
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        legend {
+            background-color: #000;
+            color: #fff;
+            padding: 3px 6px;
+        }
+
+        label {
+            margin-top: 1rem;
+            display: block;
+            font-size: .8rem;
+        }
+    </style>
+    <script src="dist/perkeep.js"></script>
+</head>
+
+<body>
+<!--[if lte IE 9]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+    your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+<fieldset>
+    <legend>Perkeep Server Configuration</legend>
+
+    <div>
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host"/>
+    </div>
+
+    <div>
+        <label for="file">File:</label>
+        <input type="file"
+               id="file" name="file"
+               accept="image/png, image/jpeg" />
+    </div>
+</fieldset>
+
+
+<script type="application/javascript">
+  var input = document.getElementById('file');
+
+  // Event handler executed when a file is selected
+  var onSelectFile = function () {
+    Perkeep.encrypt(input.files[0]);
+  };
+
+  // Add a listener on your input
+  // It will be triggered when a file will be selected
+  input.addEventListener('change', onSelectFile, false);
 </script>
+</body>
+
+</html>
