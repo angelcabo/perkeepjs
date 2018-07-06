@@ -8,7 +8,7 @@
   "background": {
     "persistent": false,
     "scripts": [
-      "dist/perkeep.js",
+      "dist/perkeep.iife.js",
       "background.js"
     ]
   },

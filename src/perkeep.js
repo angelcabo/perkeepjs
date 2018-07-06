@@ -1,5 +1,7 @@
 import base64 from 'base-64';
 import CryptoJS from "crypto-js";
+import fetchPonyfill from 'fetch-ponyfill';
+const { fetch } = fetchPonyfill();
 
 class Perkeep {
   constructor(config, discoveryConfig) {
@@ -67,7 +69,7 @@ class Perkeep {
     let uploadChunks = chunks.map((chunk) => {
       return Perkeep.toWordArray(chunk).then((wordArray) => {
         let blobref = 'sha224-' + CryptoJS.SHA224(wordArray).toString();
-        return this.upload(blobref, chunk, wordArray.sigBytes);
+        return this.upload(blobref, chunk, chunk.byteLength || chunk.size);
       });
     });
     return Promise.all(uploadChunks);
@@ -121,7 +123,7 @@ class Perkeep {
         reader.addEventListener('loadend', onLoadEnd, false);
         reader.readAsArrayBuffer(b)
       } else if (typeof Buffer !== 'undefined' && Buffer.isBuffer(b)) {
-        resolve(CryptoJS.lib.WordArray.create(b.buffer));
+        resolve(b.toString('utf8'));
       } else {
         reject(new Error('need a Blob or a Buffer'));
       }
