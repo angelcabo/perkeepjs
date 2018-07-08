@@ -1,5 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
+import json from 'rollup-plugin-json';
 
 export default [
   {
@@ -11,7 +12,8 @@ export default [
     },
     plugins: [
       resolve({
-        browser: true
+        browser: true,
+        jsnext: true
       }),
       commonjs()
     ]
@@ -23,8 +25,13 @@ export default [
       file: 'dist/perkeep.cjs.js',
       format: 'cjs'
     },
+    external: ['fs', 'util', 'url', 'path', 'http', 'https', 'fs', 'stream'],
     plugins: [
-      resolve(),
+      json(),
+      resolve({
+        jsnext: true,
+        preferBuiltins: true
+      }),
       commonjs()
     ]
   }

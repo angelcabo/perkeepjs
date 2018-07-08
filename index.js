@@ -1,45 +1,66 @@
 const fs = require('fs');
 const Perkeep = require('./dist/perkeep.cjs.js');
 
-let file = fs.readFileSync('demo.txt');
-
-var config = {
-  host: 'http://perkeep.test',
-  user: 'angel',
-  pass: 'pass',
-  vivify: 'rainbows'
-};
-
-var perkeep = Perkeep(config);
-
-perkeep.discover()
-  .then(function (response) {
-    perkeep.discoveryConfig = response;
-    return response;
-  })
-  .then(function () {
-    return perkeep.uploadBlob(file)
-      .then((parts) => {
-        let schema = {
-          "camliVersion": 1,
-          "camliType": "file",
-          "unixMTime": new Date(Date.now()).toISOString(),
-          "fileName": "Demo.txt",
-          "parts": parts
-        };
-        return perkeep.signObject(schema);
-      })
-      .then((signature) => {
-        return perkeep.uploadString(signature);
-      })
-      .then((fileref) => {
-        return perkeep.createPermanode({
-          title: 'Node JS Test',
-          url: 'https://webpage.com',
-          camliContent: fileref.blobRef
-        });
-      });
-  })
-  .then(function (permanode) {
-    return permanode.permanodeRef;
+function uploadWithSigning() {
+  let perkeep = Perkeep({
+    host: 'http://perkeep.test',
+    user: 'angel',
+    password: 'pass'
   });
+
+  let data = fs.readFileSync('demo.txt');
+
+  perkeep.discover()
+    .then(function (discoveryConfig) {
+      perkeep.discoveryConfig = discoveryConfig;
+      return perkeep.upload(data);
+    })
+    .then(function(parts) {
+      let fileSchema = {
+        "camliVersion": 1,
+        "camliType": "file",
+        "unixMTime": new Date(Date.now()).toISOString(),
+        "fileName": "demo.txt",
+        parts
+      };
+      return perkeep.sign(fileSchema).then(signature => perkeep.upload(signature));
+    })
+    .then(function(received) {
+      return perkeep.createPermanode({
+        title: "NodeJS Title",
+        camliContent: received[0].blobRef
+      });
+    })
+    .then(function({ permanodeRef }) {
+      console.log(`Created ${permanodeRef}`);
+    });
+}
+
+function uploadWithVivify() {
+  let perkeep = Perkeep({
+    host: 'http://perkeep.test',
+    user: 'angel',
+    vivify: 'rainbows'
+  });
+
+  let data = fs.readFileSync('demo.txt');
+
+  perkeep.discover()
+    .then(function(discoveryConfig) {
+      perkeep.discoveryConfig = discoveryConfig;
+      return perkeep.upload(data);
+    })
+    .then(function (parts) {
+      let fileSchema = {
+        "camliVersion": 1,
+        "camliType": "file",
+        "unixMTime": new Date(Date.now()).toISOString(),
+        "fileName": "demo.txt",
+        parts
+      };
+      return perkeep.upload(fileSchema);
+    });
+}
+
+// uploadWithSigning();
+uploadWithVivify();
