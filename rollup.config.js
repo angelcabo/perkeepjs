@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
+import inject from 'rollup-plugin-inject';
 
 export default [
   {
@@ -15,7 +16,13 @@ export default [
         browser: true,
         jsnext: true
       }),
-      commonjs()
+      commonjs(),
+      inject({
+        include: 'node_modules/**',
+        modules: {
+          Buffer: [ 'buffer/', 'Buffer' ]
+        }
+      }),
     ]
   },
   {

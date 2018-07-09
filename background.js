@@ -1,10 +1,3 @@
-var config = {
-  host: 'http://perkeep.test',
-  user: 'angel',
-  pass: 'pass',
-  vivify: 'rainbows'
-};
-
 function submitMHTML() {
   console.log("entered submitMHTML()");
   return new Promise((resolve, reject) => {
@@ -30,40 +23,66 @@ function submitMHTML() {
   });
 }
 
-var perkeep = Perkeep(config);
+function uploadWithSigning() {
+  let perkeep = Perkeep({
+    host: 'http://perkeep.test',
+    user: 'angel',
+    password: 'pass'
+  });
 
-perkeep.discover()
-  .then(function (response) {
-    perkeep.discoveryConfig = response;
-    return response;
-  })
-  .then(function () {
-    return submitMHTML()
-      .then((blob) => {
-        return perkeep.uploadBlob(blob);
+  submitMHTML().then(function (data) {
+    perkeep.discover()
+      .then(function (discoveryConfig) {
+        perkeep.discoveryConfig = discoveryConfig;
+        return perkeep.upload(data);
       })
-      .then((parts) => {
-        let schema = {
+      .then(function (parts) {
+        let fileSchema = {
           "camliVersion": 1,
           "camliType": "file",
           "unixMTime": new Date(Date.now()).toISOString(),
           "fileName": "Webpage.mht",
-          "parts": parts
+          parts
         };
-        return perkeep.signObject(schema);
+        return perkeep.sign(fileSchema).then(signature => perkeep.upload(signature));
       })
-      .then((signature) => {
-        return perkeep.uploadString(signature);
-      })
-      .then((fileref) => {
+      .then(function (received) {
         return perkeep.createPermanode({
-          title: 'Chrome Extension Test Page',
-          url: 'https://webpage.com',
-          camliContent: fileref.blobRef
+          title: "NodeJS Title",
+          camliContent: received[0].blobRef
         });
+      })
+      .then(function ({permanodeRef}) {
+        console.log(`Created ${permanodeRef}`);
       });
-  })
-  .then(function (permanode) {
-    return permanode.permanodeRef;
   });
-// .then(console.log);
+}
+
+function uploadWithVivify() {
+  let perkeep = Perkeep({
+    host: 'http://perkeep.test',
+    user: 'angel',
+    vivify: 'rainbows'
+  });
+
+  submitMHTML().then(function (data) {
+    return perkeep.discover()
+      .then(function (discoveryConfig) {
+        perkeep.discoveryConfig = discoveryConfig;
+        return perkeep.upload(data);
+      })
+      .then(function (parts) {
+        let fileSchema = {
+          "camliVersion": 1,
+          "camliType": "file",
+          "unixMTime": new Date(Date.now()).toISOString(),
+          "fileName": "webpage.mht",
+          parts
+        };
+        return perkeep.upload(fileSchema);
+      });
+  });
+}
+
+uploadWithSigning();
+// uploadWithVivify();
