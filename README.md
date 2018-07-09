@@ -1,6 +1,6 @@
 ## Getting started
 
-This is a universal javascript client for the [Perkeep storage system](http://perkeep.org/) which is intended to run on the client and/or the server.
+This is a Universal Javascript client for the [Perkeep storage system](http://perkeep.org/).
 
 ```bash
 npm install perkeep
@@ -8,7 +8,7 @@ npm install perkeep
 
 The library supports saving data using either a username/password or a username/vivify-password which does not allow signing schemas. An example of both use cases is shown below. The `upload` method should accept just about any type of data (in the browser or in Node). e.g. Blobs, Buffers, TypedArrays, JSON, or Strings.
 
-### Upload with signing capabilities:
+### Upload with a username/password combo that has signing capabilities:
 
 ```javascript
 const Perkeep = require('perkeep');
@@ -75,36 +75,16 @@ perkeep.discover()
   });
 ```
 
-An instance of the `Perkeep` class has the following public interface:
-
-```javascript
-class Perkeep {
-    async discover() {}
-  
-    get discoveryConfig() {}
-  
-    set discoveryConfig(discoveryConfig) {}
-  
-    async createPermanode(attributes={}) {}
-  
-    async updatePermanode(blobRef, claimType, attribute, value) {}
-  
-    async sign(schema) {}
-  
-    async upload(data) {}
-}
-``` 
-
 ## Building and Running Tests
 
 `npm run build` builds the library to `dist`, generating three files:
 
 * `dist/perkeep.cjs.js`
-    A CommonJS bundle, suitable for use in Node.js, that `require`s the external dependency. This corresponds to the `"main"` field in package.json
+    A CommonJS bundle, suitable for use in Node.js, that `require`s the external dependencies. This corresponds to the `"main"` field in package.json
 * `dist/perkeep.esm.js`
     an ES module bundle, suitable for use in other people's libraries and applications, that `import`s the external dependency. This corresponds to the `"module"` field in package.json
 * `dist/perkeep.iife.js`
-    a UMD build, suitable for use in any environment (including the browser, as a `<script>` tag), that includes the external dependency. This corresponds to the `"browser"` field in package.json
+    a IIFE build, suitable for use in the browser, as a `<script>` tag, that includes the external dependencies. This corresponds to the `"browser"` field in package.json
 
 `npm run dev` builds the library, then keeps rebuilding it whenever the source files change using [rollup-watch](https://github.com/rollup/rollup-watch).
 
@@ -112,7 +92,11 @@ class Perkeep {
 
 ## TODO
 
-* Add data uri parsing to `upload` support: https://www.npmjs.com/package/data-uri-to-buffer
+- Make the "Building and Running Tests" section real.
+- Document Perkeep class API.
+- Cleanup experimental build configs and npm run-scripts.
+- Add [data uri parsing](https://www.npmjs.com/package/data-uri-to-buffer) to `upload` support.
+- Add ability to search and query.
 
 ## License
 

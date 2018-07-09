@@ -142,6 +142,44 @@ class Perkeep {
     return Promise.all(uploadRequests);
   }
 
+  async searchFile(blobRef) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.password}`)}`
+      }
+    };
+
+    let response = await fetch(this.SEARCH_ROOT + 'camli/search/files' + '?wholedigest=' + blobRef, options);
+    if (response.ok) return response.json();
+    throw await response.text();
+  }
+
+  async get(blobRef) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.password}`)}`
+      }
+    };
+
+    let response = await fetch(this.host + this._discoveryConfig.blobRoot + 'camli/' + blobRef, options);
+    if (response.ok) return response.text();
+    throw await response.text();
+  }
+
+  async stat(blobRef) {
+    const options = {
+      method: 'HEAD',
+      headers: {
+        'Authorization': `Basic ${base64.encode(`${this.user}:${this.password}`)}`
+      }
+    };
+
+    let response = await fetch(this.UPLOAD_HANDLER + '/' + blobRef, options);
+    return response.ok;
+  }
+
   isSchema (object) {
     return typeof object !== "string" ? object.hasOwnProperty('camliVersion') : object.match('camliVersion');
   }
