@@ -4,6 +4,7 @@ This is a Universal Javascript client for the [Perkeep storage system](http://pe
 
 ```bash
 npm install perkeep
+bower install perkeep
 ```
 
 The library supports saving data using either a username/password or a username/vivify-password which does not allow signing schemas. An example of both use cases is shown below. The `upload` method should accept just about any type of data (in the browser or in Node). e.g. Blobs, Buffers, TypedArrays, JSON, or Strings.
