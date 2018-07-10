@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Perkeep = require('./dist/perkeep.cjs.js');
+const Perkeep = require('../../dist/perkeep.cjs.js');
 
 function uploadWithSigning() {
   let perkeep = Perkeep({

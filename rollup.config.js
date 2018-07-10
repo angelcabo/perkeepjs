@@ -1,45 +1,9 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import inject from 'rollup-plugin-inject';
+import browserConfig from './rollup.browser.config.js';
+import nodeConfig from './rollup.node.config.js';
 
-export default [
-  {
-    input: 'src/main.js',
-    output: {
-      name: 'Perkeep',
-      file: 'dist/perkeep.iife.js',
-      format: 'iife'
-    },
-    plugins: [
-      resolve({
-        browser: true,
-        jsnext: true
-      }),
-      commonjs(),
-      inject({
-        include: 'node_modules/**',
-        modules: {
-          Buffer: [ 'buffer/', 'Buffer' ]
-        }
-      }),
-    ]
-  },
-  {
-    input: 'src/main.js',
-    output: {
-      name: 'Perkeep',
-      file: 'dist/perkeep.cjs.js',
-      format: 'cjs'
-    },
-    external: ['fs', 'util', 'url', 'path', 'http', 'https', 'fs', 'stream'],
-    plugins: [
-      json(),
-      resolve({
-        jsnext: true,
-        preferBuiltins: true
-      }),
-      commonjs()
-    ]
+export default commandLineArgs => {
+  if (commandLineArgs.configBrowser === true) {
+    return browserConfig;
   }
-];
+  return nodeConfig;
+}

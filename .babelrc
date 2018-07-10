@@ -1,11 +1,24 @@
 {
-  "presets": [
-    ["@babel/preset-env", {
-      "targets": {
-        "browsers": ["last 2 Chrome versions"]
-      },
-      "modules": "umd",
-      "debug": true
-    }]
-  ]
+  "env": {
+    "browser": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "browsers": "defaults"
+          },
+          "modules": false
+        }]
+      ]
+    },
+    "node": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "node": "6"
+          },
+          "modules": false
+        }]
+      ]
+    }
+  }
 }
