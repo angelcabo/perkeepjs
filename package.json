@@ -1,10 +1,16 @@
 {
   "name": "perkeepjs",
+  "description": "A Universal Javascript client for the Perkeep storage system.",
   "version": "1.0.0",
-  "private": true,
   "main": "dist/perkeep.cjs.js",
-  "module": "dist/perkeep.esm.js",
   "browser": "dist/perkeep.iife.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angelcabo/perkeepjs"
+  },
+  "keywords": ["perkeep", "javascript"],
+  "author": "Angel Balcarcel",
+  "license": "MIT",
   "dependencies": {
     "base-64": "^0.1.0",
     "blob-to-buffer": "^1.2.8",
