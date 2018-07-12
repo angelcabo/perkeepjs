@@ -94,7 +94,6 @@ perkeep.discover()
 
 - Make the "Building and Running Tests" section real.
 - Document Perkeep class API.
-- Cleanup experimental build configs and npm run-scripts.
 - Add [data uri parsing](https://www.npmjs.com/package/data-uri-to-buffer) to `upload` support.
 - Add ability to search and query.
 
