@@ -1,5 +1,5 @@
 {
-  "name": "perkeepjs",
+  "name": "perkeep",
   "description": "A Universal Javascript client for the Perkeep storage system.",
   "version": "1.0.0",
   "main": "dist/perkeep.cjs.js",
