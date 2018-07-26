@@ -6,7 +6,8 @@
           "targets": {
             "browsers": "defaults"
           },
-          "modules": false
+          "modules": false,
+          "useBuiltIns": "usage"
         }]
       ]
     },

@@ -130,14 +130,16 @@ class Perkeep {
     if (this.vivifyMode && isSchema)
       return this.doUploadBatch(chunks, true);
 
-    // if (chunks.length > 16) return this.doUploadBatch(chunks)
+    // todo: if (chunks.length > 16) return this.doUploadBatch(chunks)
 
+    // todo: check spdy/http2 compatibility for quickest upload
     // if (SPDY or HTTP/2 not available) {
     //   return this.doUploadBatch(chunks);
     // } else {
     //   return Promise.all(chunks.map(chunk => this.doUpload(chunk)));
     // }
 
+    // todo: should stat chunks here first and then upload what doesn't already exist
     let uploadRequests = chunks.map(chunk => this.doUpload(chunk));
     return Promise.all(uploadRequests);
   }

@@ -25,20 +25,25 @@
     "@babel/cli": "^7.0.0-beta.51",
     "@babel/core": "^7.0.0-beta.51",
     "@babel/preset-env": "^7.0.0-beta.51",
+    "@babel/polyfill": "^7.0.0-beta.51",
     "rollup": "^0.60.0",
     "rollup-plugin-babel": "^4.0.0-beta.7",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-inject": "^2.0.0",
     "rollup-plugin-json": "^3.0.0",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "express": "^4.16.3",
+    "mocha": "^5.2.0",
+    "chai": "^4.1.2"
   },
   "scripts": {
     "start": "node $NODE_DEBUG_OPTION index.js",
     "build": "BABEL_ENV=node rollup -c; BABEL_ENV=browser rollup -c --configBrowser",
     "dev-node": "BABEL_ENV=node rollup -c -w --configNode",
     "dev-browser": "BABEL_ENV=browser rollup -c -w --configBrowser",
-    "test": "node test/test.js",
-    "pretest": "npm run build"
+    "test": "jest",
+    "pretest": "npm run build",
+    "test-server": "node test/server.js"
   },
   "files": [
     "dist"
