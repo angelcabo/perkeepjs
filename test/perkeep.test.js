@@ -1,15 +1,19 @@
 describe('sum', function () {
-  it('should return sum of arguments', function () {
+  it('should return sum of arguments', function (done) {
+    // fetchMock.get('localhost:8080', {hello: 'world'});
+
     let pk = Perkeep({
-      host: 'http://perkeep.test',
+      host: 'http://localhost:8080',
       user: 'user',
       pass: 'pass'
     });
 
-    pk._discoveryConfig = {
-      foo: 'bar'
-    };
+    return pk.discover().then(function (discoveryConfig) {
+      pk.discoveryConfig = discoveryConfig;
 
-    chai.expect(pk.discoveryConfig).to.equal('test');
+      let result = chai.expect(pk.discoveryConfig).to.equal('test');
+      console.log(result);
+      done();
+    }).catch(done);
   });
 });

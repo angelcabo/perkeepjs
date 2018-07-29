@@ -1,0 +1,41 @@
+{
+  "blobRoot": "/bs-and-maybe-also-index/",
+  "jsonSignRoot": "/sighelper/",
+  "helpRoot": "/help/",
+  "importerRoot": "/importer/",
+  "searchRoot": "/my-search/",
+  "statusRoot": "/status/",
+  "shareRoot": "",
+  "ownerName": "Angel",
+  "userName": "angel",
+  "storageGeneration": "6f0a48379b2f1e7f5976a1605ccba766c46c01d4",
+  "storageInitTime": "2018-07-03T12:14:53.324832571Z",
+  "thumbVersion": "2",
+  "authToken": "9013fc098d6a6c3ffcdbdc6f309fc8d60c7b2549",
+  "hasLegacySHA1Index": false,
+  "syncHandlers": [
+    {
+      "from": "/bs/",
+      "to": "/index/",
+      "toIndex": true
+    },
+    {
+      "from": "/bs/",
+      "to": "/sto-s3/",
+      "toIndex": false
+    }
+  ],
+  "signing": {
+    "publicKey": "/sighelper/camli/sha224-69ca12601e2e175c0ab710425fe3a4b84f58a63bead6178bd8de4a7d",
+    "publicKeyBlobRef": "sha224-69ca12601e2e175c0ab710425fe3a4b84f58a63bead6178bd8de4a7d",
+    "publicKeyId": "0EB18B48D2070FDF",
+    "signHandler": "/sighelper/camli/sig/sign",
+    "verifyHandler": "/sighelper/camli/sig/verify"
+  },
+  "uiRoot": "/ui/",
+  "uploadHelper": "/ui/?camli.mode=uploadhelper",
+  "directoryHelper": "/ui/tree/",
+  "downloadHelper": "/ui/download/",
+  "publishRoots": {},
+  "mapClustering": false
+}

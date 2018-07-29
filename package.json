@@ -34,7 +34,9 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "express": "^4.16.3",
     "mocha": "^5.2.0",
-    "chai": "^4.1.2"
+    "chai": "^4.1.2",
+    "fetch-mock": "^6.5.2",
+    "cors": "^2.8.4"
   },
   "scripts": {
     "start": "node $NODE_DEBUG_OPTION index.js",

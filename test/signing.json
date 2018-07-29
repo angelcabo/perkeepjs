@@ -1,0 +1,28 @@
+{"camliVersion":1,
+  "camliType": "file",
+  "unixMTime": "2018-07-26T15:45:58.663Z",
+  "fileName": "Webpage.mht",
+  "parts": [
+    {
+      "blobRef": "sha224-026adb11ad0411a273905dfea5b1a0928e2e6e483e43b3403e4bcbc5",
+      "size": 1000000
+    },
+    {
+      "blobRef": "sha224-8156402486afb46840092cef5a7bd5f3858106a3a327829cc77aef9c",
+      "size": 1000000
+    },
+    {
+      "blobRef": "sha224-28fc8a1d46bc19804b600fcd16be6d176e467ef0fbb17ed9d2c8d28a",
+      "size": 1000000
+    },
+    {
+      "blobRef": "sha224-b7f9f7b44f1e11dacbf7c0df73e069d166072875de37422b5700e86a",
+      "size": 1000000
+    },
+    {
+      "blobRef": "sha224-5a118b990a822a200e33834610a48dd736bf125c475fcb1c4291868a",
+      "size": 616225
+    }
+  ],
+  "camliSigner": "sha224-69ca12601e2e175c0ab710425fe3a4b84f58a63bead6178bd8de4a7d"
+,"camliSig":"wsBcBAABCAAQBQKIbgkACRAOsYtI0gcP3wAAFgMIAMl6YkVyZz6XAhQgfxd/pM/I1pdBugtt4k7Jdq575285XtSi2NMEdczMtNCa4VLnIqmcm6E7M0hsczXzajekzd/m+od2w2L4DuQhYTcu1F9zJNCOcnrfafSE3xmtMPXfQ3o6BDW6WvUECYLdhq2FZVYAK63805v6C26/iTB4sYL2Az43HqFtty86BID2U2mnidwJmEWMy3dv2TXC5bi/M4BE/lesj+0OynqU6OaGjdcxhO/5Fc7rlp3QkFbd+nhcbdzQc/fJ3/aEvlHkDOkjPMlhqot6m2VDd5AJb6rNKe9LqWXhmG6heiZRyqe486RYiVFQrTSayp+tsmqejC3+j7I==UFVM"}
