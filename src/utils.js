@@ -1,24 +1,15 @@
 import { Buffer } from 'buffer/'
 import isTypedArray from 'is-typedarray'
 import arrayToBuffer from 'typedarray-to-buffer'
-import blobToBuffer from 'blob-to-buffer'
 
 const CHUNK_SIZE = 1000000;
-
-const resolveBlobToBuffer = async (data) => {
-  return new Promise((resolve, reject) => {
-    blobToBuffer(data, (err, buffer) => {
-      if (err) reject(err);
-      resolve(buffer)
-    });
-  })
-};
 
 const parseBuffer = async (data) => {
   let buffer;
 
   if (typeof Blob !== 'undefined' && data instanceof Blob) {
-    buffer = await resolveBlobToBuffer(data);
+    const ab = await new Response(data).arrayBuffer();
+    buffer = Buffer.from(ab);
 
   } else if (Buffer.isBuffer(data)) {
     buffer = Buffer.from(data);
